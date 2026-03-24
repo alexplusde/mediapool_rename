@@ -4,7 +4,7 @@ namespace Alexplusde\MediapoolRename;
 
 use rex;
 use rex_config;
-use rex_delete_cache;
+use function rex_delete_cache;
 use rex_extension_point;
 use rex_i18n;
 use rex_media;
