@@ -38,7 +38,7 @@ class MediapoolRename
      *
      * Called via extension point MEDIA_FORM_EDIT (late) to initialize the rename field.
      */
-    public static function clearMetaField(rex_extension_point $ep): void
+    public static function prefillMetaField(rex_extension_point $ep): void
     {
         /** @var rex_sql $media */
         $media = $ep->getParam('media');
