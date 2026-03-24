@@ -98,9 +98,6 @@ class MediapoolRename
             return;
         }
 
-        // Clear meta field
-        self::clearMetaFieldForFile($oldFile);
-
         // Check if target filename already exists
         if (self::filenameExists($newFile)) {
             echo rex_view::error(rex_i18n::msg('mediapool_rename_error_filename_exists'));
@@ -123,6 +120,10 @@ class MediapoolRename
 
         // Update all database references
         self::updateDatabaseReferences($oldFile, $newFile);
+
+        // Clear meta field only after a successful rename
+        // (at this point the DB row already has filename = $newFile)
+        self::clearMetaFieldForFile($newFile);
 
         rex_delete_cache();
 
