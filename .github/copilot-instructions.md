@@ -31,7 +31,7 @@
 - PSR-2 / PSR-12 PHP coding style.
 - Class names follow the pattern `rex_<addon_name>` (e.g., `rex_mediapool_rename`).
 - Static methods are preferred for addon utility classes.
-- Wrap database operations in `try/catch (rex_sql_exception $e)` blocks and surface errors via `rex_view::warning()`.
+- Wrap database operations in `try/catch (rex_sql_exception $e)` blocks and use the appropriate `rex_view::*()` method for user-facing messages depending on severity (error, warning, success, info).
 - Comments in German or English are both acceptable (the project uses both).
 
 ## Key Business Logic
