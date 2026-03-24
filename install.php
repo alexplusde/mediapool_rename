@@ -12,7 +12,7 @@ $sql->setQuery(
 
 if (0 === $sql->getRows()) {
     rex_metainfo_add_field(
-        rex_i18n::msg('mediapool_rename_meta_field_label'),
+        'translate:mediapool_rename_meta_field_label',
         'med_mediapool_rename',
         '1',
         $attributes,
