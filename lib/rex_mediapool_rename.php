@@ -33,9 +33,9 @@ class MediapoolRename
     private const META_FIELD = 'med_mediapool_rename';
 
     /**
-     * Clears the rename meta field for the current media item.
+     * Pre-fills the rename meta field for the current media item with its basename.
      *
-     * Called via extension point MEDIA_FORM_EDIT (late).
+     * Called via extension point MEDIA_FORM_EDIT (late) to initialize the rename field.
      */
     public static function clearMetaField(rex_extension_point $ep): void
     {
