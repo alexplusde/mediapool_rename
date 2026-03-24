@@ -8,3 +8,7 @@ mediapool_rename_help_title = Help
 mediapool_rename_docs = Documentation
 mediapool_rename_allowed_chars = Allowed characters: a–z, 0–9, hyphen (-) and underscore (_)
 mediapool_rename_validation_error = The filename contains invalid characters.
+mediapool_rename_settings = Settings
+mediapool_rename_settings_fieldset = Table Exclusions
+mediapool_rename_settings_excluded_patterns_label = Excluded table patterns (one pattern per line)
+mediapool_rename_settings_excluded_patterns_notice = Tables whose name contains any of the patterns will be skipped when updating database references. By default, tables containing "_history" or "tmp_" in their name are excluded.
