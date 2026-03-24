@@ -193,10 +193,12 @@ class MediapoolRename
 
     /**
      * Returns true when the given table name matches at least one exclusion pattern.
+     *
+     * @param list<string> $patterns
      */
-    private static function isExcludedTable(string $table): bool
+    private static function isExcludedTable(string $table, array $patterns): bool
     {
-        foreach (self::getExcludedTablePatterns() as $pattern) {
+        foreach ($patterns as $pattern) {
             if (str_contains($table, $pattern)) {
                 return true;
             }
@@ -229,11 +231,14 @@ class MediapoolRename
         $sql->setQuery('SHOW TABLES');
         $tables = $sql->getArray();
 
+        // Load exclusion patterns once to avoid re-parsing config on every table iteration
+        $excludedPatterns = self::getExcludedTablePatterns();
+
         foreach ($tables as $row) {
             $table = current($row);
 
             // Skip tables matching any configured exclusion pattern
-            if (self::isExcludedTable($table)) {
+            if (self::isExcludedTable($table, $excludedPatterns)) {
                 continue;
             }
 
