@@ -3,6 +3,7 @@
 namespace Alexplusde\MediapoolRename;
 
 use rex;
+use rex_config;
 use rex_delete_cache;
 use rex_extension_point;
 use rex_i18n;
@@ -174,6 +175,37 @@ class MediapoolRename
     }
 
     /**
+     * Returns the list of table-exclusion patterns from config.
+     * Each non-empty line of the stored value is treated as a substring
+     * that, if present in a table name, causes the table to be skipped.
+     *
+     * @return list<string>
+     */
+    private static function getExcludedTablePatterns(): array
+    {
+        // The PHP-level default ensures the feature works on existing installations
+        // that upgrade without triggering a full re-install (where default_config is applied).
+        $default = "_history\ntmp_";
+        $raw = (string) rex_config::get('mediapool_rename', 'excluded_table_patterns', $default);
+
+        return array_values(array_filter(array_map('trim', explode("\n", $raw))));
+    }
+
+    /**
+     * Returns true when the given table name matches at least one exclusion pattern.
+     */
+    private static function isExcludedTable(string $table): bool
+    {
+        foreach (self::getExcludedTablePatterns() as $pattern) {
+            if (str_contains($table, $pattern)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Returns true when the given MySQL column type is a textual type
      * on which a REPLACE/REGEXP update makes sense.
      */
@@ -199,6 +231,11 @@ class MediapoolRename
 
         foreach ($tables as $row) {
             $table = current($row);
+
+            // Skip tables matching any configured exclusion pattern
+            if (self::isExcludedTable($table)) {
+                continue;
+            }
 
             $fieldSql = rex_sql::factory();
             $fieldSql->setQuery('SHOW COLUMNS FROM ' . $fieldSql->escapeIdentifier($table));

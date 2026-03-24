@@ -15,11 +15,19 @@ page:
     title: translate:mediapool_rename_title
     hidden: true
 
+default_config:
+    excluded_table_patterns: "_history\ntmp_"
+
 pages:
     mediapool/rename:
         title: translate:mediapool_rename_title
         perm: mediapool_rename[]
         subpages:
+            settings:
+                title: translate:mediapool_rename_settings
+                icon: rex-icon fa-cog
+                itemClass: pull-right
+                perm: admin
             docs:
                 title: translate:mediapool_rename_docs
                 subPath: README.md
