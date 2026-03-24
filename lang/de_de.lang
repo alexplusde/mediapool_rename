@@ -11,4 +11,4 @@ mediapool_rename_validation_error = Der Dateiname enthält unerlaubte Zeichen.
 mediapool_rename_settings = Einstellungen
 mediapool_rename_settings_fieldset = Tabellen-Ausschlüsse
 mediapool_rename_settings_excluded_patterns_label = Ausgeschlossene Tabellenmuster (ein Muster pro Zeile)
-mediapool_rename_settings_excluded_patterns_notice = Tabellennamen, die eines der Muster enthalten, werden beim Aktualisieren von Datenbankverweisen übersprungen. Standardmäßig werden Tabellen mit „_history" oder „tmp_" im Namen ausgeschlossen.
+mediapool_rename_settings_excluded_patterns_notice = Tabellennamen, die eines der Muster enthalten, werden beim Aktualisieren von Datenbankverweisen übersprungen. Standardmäßig werden Tabellen mit „_history“ oder „tmp_“ im Namen ausgeschlossen.
