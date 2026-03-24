@@ -14,11 +14,10 @@
 - `install.php` – Creates the meta info field on installation
 - `uninstall.php` – Removes the meta info field on uninstallation
 - `lib/rex_mediapool_rename.php` – Main addon class `MediapoolRename` (namespace `Alexplusde\MediapoolRename`)
-- `package.yml` – Addon metadata, dependency declarations, page definitions
-- `help.php` – Addon help page (renders README.md)
+- `package.yml` – Addon metadata, dependency declarations, and backend page definitions (including `pages.*.subPath` for docs)
 - `lang/de_de.lang` – German translations
 - `lang/en_gb.lang` – English translations
-- `readme.md` – Comprehensive addon documentation
+- `readme.md` – Comprehensive addon documentation, rendered in the REDAXO backend via the `package.yml` page definition
 
 ## Namespace & Class Conventions
 - Namespace: `Alexplusde\MediapoolRename`
