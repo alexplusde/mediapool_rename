@@ -50,12 +50,13 @@ class MediapoolRename
             return;
         }
 
-        // Pre-fill meta field with current filename (without extension)
+        // Pre-fill meta field with normalized current filename (without extension)
         $nameWithoutExt = pathinfo($filename, PATHINFO_FILENAME);
+        $normalizedName = rex_string::normalize($nameWithoutExt, '_');
 
         $sql = rex_sql::factory();
         $sql->setTable(rex::getTable('media'));
-        $sql->setValue(self::META_FIELD, $nameWithoutExt);
+        $sql->setValue(self::META_FIELD, $normalizedName);
         $sql->setWhere('filename = :filename', ['filename' => $filename]);
 
         try {
