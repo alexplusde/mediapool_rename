@@ -1,3 +1,3 @@
 <?php
 
-rex_metainfo_add_field('gewünscher Dateiname (ohne Endung)', 'med_mediapool_rename', '1','','1','','','','');
+rex_metainfo_add_field(rex_i18n::msg('mediapool_rename_meta_field_label'), 'med_mediapool_rename', '1', '', '1', '', '', '', '');

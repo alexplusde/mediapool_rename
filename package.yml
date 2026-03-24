@@ -1,8 +1,34 @@
 package: mediapool_rename
-version: '2.0.0'
+version: '3.0.0'
 author: 'Alexander Walther, based on explorit* new media'
+supportpage: https://github.com/alexplusde/mediapool_rename
 
 requires:
+    php:
+        version: '>=8.3,<9'
+    redaxo: '^5.18.3'
     packages:
         mediapool: '>=2.3.0'
-    redaxo: ^5.19.0
+        metainfo: '>=2.6.0'
+
+page:
+    title: translate:mediapool_rename_title
+    hidden: true
+
+pages:
+    mediapool/rename:
+        title: translate:mediapool_rename_title
+        perm: mediapool_rename[]
+        subpages:
+            docs:
+                title: translate:mediapool_rename_docs
+                subPath: README.md
+                icon: rex-icon fa-info-circle
+                itemClass: pull-right
+                perm: admin
+
+installer_ignore:
+    - .git
+    - .gitignore
+    - .github
+    - node_modules

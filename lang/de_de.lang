@@ -1,0 +1,8 @@
+mediapool_rename_title = Medienpool Umbenennen
+mediapool_rename_meta_field_label = Gewünschter Dateiname (ohne Endung)
+mediapool_rename_error_filename_exists = Der Dateiname existiert bereits. Bitte wähle einen anderen Dateinamen.
+mediapool_rename_error_file_not_found = Die Originaldatei wurde im Dateisystem nicht gefunden.
+mediapool_rename_error_rename_failed = Die Datei konnte nicht umbenannt werden. Bitte überprüfe die Dateiberechtigungen.
+mediapool_rename_success = Die Datei wurde erfolgreich umbenannt: {0} → {1}
+mediapool_rename_help_title = Hilfe
+mediapool_rename_docs = Dokumentation

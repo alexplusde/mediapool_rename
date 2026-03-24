@@ -1,4 +1,6 @@
 <?php
 
-rex_extension::register('MEDIA_FORM_EDIT', ['rex_mediapool_rename', 'deleteMetaInfo'], rex_extension::LATE );
-rex_extension::register('MEDIA_UPDATED', ['rex_mediapool_rename', 'processUpdatedMedia'], rex_extension::LATE );
+use Alexplusde\MediapoolRename\MediapoolRename;
+
+rex_extension::register('MEDIA_FORM_EDIT', [MediapoolRename::class, 'clearMetaField'], rex_extension::LATE);
+rex_extension::register('MEDIA_UPDATED', [MediapoolRename::class, 'processUpdatedMedia'], rex_extension::LATE);

@@ -1,175 +1,217 @@
 <?php
 
-class rex_mediapool_rename
+namespace Alexplusde\MediapoolRename;
+
+use rex;
+use rex_delete_cache;
+use rex_extension_point;
+use rex_i18n;
+use rex_media;
+use rex_path;
+use rex_sql;
+use rex_sql_exception;
+use rex_string;
+use rex_view;
+
+/**
+ * Handles renaming of media files in REDAXO's mediapool.
+ *
+ * Renames the physical file and updates all database references
+ * (simple text fields, comma-separated lists) automatically.
+ *
+ * **Currently supported reference types:**
+ * - Direct filename matches in any VARCHAR / TEXT column across all tables
+ *
+ * **Not yet supported (planned):**
+ * - TEXTAREA / be_media fields defined in YForm table definitions
+ * - JSON-encoded references
+ * - Serialized PHP data
+ */
+class MediapoolRename
 {
+    private const META_FIELD = 'med_mediapool_rename';
 
-    /* 
-    called by extension point MEDIA_FORM_EDIT:
-    */
-
-    public static function deleteMetaInfo(rex_extension_point $ep)
+    /**
+     * Clears the rename meta field for the current media item.
+     *
+     * Called via extension point MEDIA_FORM_EDIT (late).
+     */
+    public static function clearMetaField(rex_extension_point $ep): void
     {
+        $sql = rex_sql::factory();
+        $sql->setTable(rex::getTable('media'));
+        $sql->setValue(self::META_FIELD, '');
+        $sql->setWhere('filename = :filename', ['filename' => $ep->getParam('filename')]);
 
-        /* 
-        run through all "rename" meta-info-fields and delete content from non empty fields:
-        */
-
-    	$newPost = rex_sql::factory();
-		$newPost->setTable(rex::getTablePrefix().'media');
-		$newPost->setValue('med_mediapool_rename','');
-
-		try {
-		  $newPost->update();
-		} catch (rex_sql_exception $e) {
-		  echo rex_view::warning($e->getMessage());
-		}
-
-    }
-
-    /* 
-    called by extension point MEDIA_UPDATED:
-    */
-
-    public static function processUpdatedMedia(rex_extension_point $ep)
-    {
-
-        if($data = static::getDataByFilename($ep->getParam('filename')))
-        {
-            $qry = "SELECT * FROM `" . rex::getTablePrefix() . "media` WHERE `filename` = '" . $ep->getParam('filename') . "'";
-            $sql = rex_sql::factory();
-            $sql->setQuery($qry);
-            if($result = $sql->getArray())
-            {
-                $result = $result[0];
-
-                // ----- split filename into name and extension
-                $NFILENAME = $result['filename'];
-				if (strrpos($NFILENAME, '.') != '') {
-				    $NFILE_NAME = substr($NFILENAME, 0, strlen($NFILENAME) - (strlen($NFILENAME) - strrpos($NFILENAME, '.')));
-				    $NFILE_EXT = substr($NFILENAME, strrpos($NFILENAME, '.'), strlen($NFILENAME) - strrpos($NFILENAME, '.'));
-				} else {
-				    $NFILE_NAME = $NFILENAME;
-				    $NFILE_EXT = '';
-				}
-
-                // ----- new filename
-                $rename = $result['med_mediapool_rename'];
-		        $rename = rex_string::normalize($rename, '_', '.-');
-
-		        // ----- delete meta info contents
-		        /* $sqly = "UPDATE `" . rex::getTablePrefix() . "media` SET `med_mediapool_rename` = '' WHERE `filename` = '" . $ep->getParam('filename') . "'";
-		        $sqly = rex_sql::factory();
-		        $sqly->setQuery($sqly); 
-		        <-- moved to MEDIA_FORM_EDIT extension point method -->
-		        */
-
-		        // ----- check if sanitized filename is empty
-		        if($rename != ''){
-
-	                $oldFile = $NFILENAME;
-			        $newFile = $rename.$NFILE_EXT;
-
-			    	$newPost = rex_sql::factory();
-					$newPost->setTable(rex::getTablePrefix().'media'); // rex_foo_bar
-					$newPost->setValue('med_mediapool_rename','');
-
-					try {
-					  $newPost->update();
-					} catch (rex_sql_exception $e) {
-					  echo rex_view::warning($e->getMessage());
-					}
-
-			        // ----- check if new filename exists already
-		            $qry = "SELECT * FROM `" . rex::getTablePrefix() . "media` WHERE `filename` = '" . $newFile . "'";
-		            $sql = rex_sql::factory();
-		            $sql->setQuery($qry);
-		            if($result = $sql->getArray())
-		            {
-		            	$error = "FEHLER: Der Dateiname existiert bereits. Bitte wählen Sie einen anderen Dateinamen.";
-		            	echo rex_view::error($error);
-		            	return;
-		            }
-
-
-			        // ----- rename file in media folder
-			        rename(rex_path::media().$oldFile, rex_path::media().$newFile);
-
-			        // ----- iterate through all tables in db
-			        $qry = "SHOW TABLES";
-			        $sql = rex_sql::factory();
-			        $sql->setQuery($qry);
-
-			        if($result = $sql->getArray())
-			        {
-			        	for($i=0;$i<count($result);$i++){
-				        	$table = current($result[$i]);
-
-			        		// ----- iterate through all fields in table
-					        $qry2 = "SHOW FIELDS FROM ".$table.";";
-					        $sql2 = rex_sql::factory();
-					        $sql2->setQuery($qry2);
-
-					        if($result2 = $sql2->getArray())
-					        {
-						        for($j=0;$j<count($result2);$j++){
-						        	$field = current($result2[$j]);
-
-						        	// ----- update single fields where string matches
-						        	//$update = "UPDATE ".$table." SET `".$field."` = REPLACE(`".$field."`, '".$oldFile."', '".$newFile."');";
-						        	//$update = "UPDATE ".$table." SET `".$field."` = REPLACE(`".$field."`, '".$oldFile."', '".$newFile."');";
-						        	//$update = "UPDATE ".$table." SET `".$field."` = trim(REPLACE(concat(' ',`".$field."`,' '),' ".$oldFile." ',' ".$newFile." '));";
-						        	// ----- took a while to find the finally fitting query ;o)
-
-								// FIX 2024-10-17 REXEXP mit [[:<:]] doesnt work in Mysql 8
-								// old:
-								//$update = "UPDATE ".$table." SET `".$field."` = CASE WHEN `".$field."` REGEXP '[[:<:]]".$oldFile."[[:>:]]' THEN REPLACE(`".$field."`,'".$oldFile."','".$newFile."') END WHERE `".$field."` REGEXP '[[:<:]]".$oldFile."[[:>:]]';";
-						        	//$updateSql = rex_sql::factory();
-						        	//$updateSql->setQuery($update);
-								// fixed:
-								$update = "UPDATE ".$table."
-										SET `".$field."` = CASE 
-										 WHEN CONVERT(`".$field."` USING utf8mb4) REGEXP '\\\\b".$oldFile."\\\\b' 
-										 THEN REPLACE(`".$field."`, '".$oldFile."', '".$newFile."') 
-									    END 
-									    WHERE CONVERT(`".$field."` USING utf8mb4) REGEXP '\\\\b".$oldFile."\\\\b';";
-							    	$updateSql = rex_sql::factory();
-							    	// update mit try/catch
-							    	try {
-									$updateSql->setQuery($update);
-							    	} catch (rex_sql_exception $e) {
-									echo rex_view::warning($e->getMessage());
-							    	}
-
-						        }
-						    }
-					    }
-					    // ----- delete cache for correctly referencing the new file name on all pages
-					    rex_delete_cache();
-			        }
-			    }
-                unset($field);
-
-            }
-            unset($result, $qry, $sql, $qry2, $updateSql);
+        try {
+            $sql->update();
+        } catch (rex_sql_exception $e) {
+            echo rex_view::warning($e->getMessage());
         }
-        unset($data);
     }
 
-    /* 
-    method for fetching file data:
-    */
-
-    public static function getDataByFilename($filename)
+    /**
+     * Processes a media rename after media has been updated.
+     *
+     * Called via extension point MEDIA_UPDATED (late).
+     * Renames the physical file and updates all database references.
+     */
+    public static function processUpdatedMedia(rex_extension_point $ep): void
     {
-        if($media = rex_media::get($filename))
-        {
-            if($media->fileExists())
-            {
-                return $media;
-            }
+        $filename = $ep->getParam('filename');
+
+        if (!$filename || !self::getMediaByFilename($filename)) {
+            return;
+        }
+
+        $sql = rex_sql::factory();
+        $sql->setQuery(
+            'SELECT `filename`, `med_mediapool_rename` FROM `' . rex::getTable('media') . '` WHERE `filename` = :filename',
+            ['filename' => $filename],
+        );
+
+        if (0 === $sql->getRows()) {
+            return;
+        }
+
+        $currentFilename = $sql->getValue('filename');
+        $renameValue = $sql->getValue(self::META_FIELD);
+
+        $rename = rex_string::normalize((string) $renameValue, '_', '.-');
+
+        if ('' === $rename) {
+            return;
+        }
+
+        $extension = pathinfo((string) $currentFilename, PATHINFO_EXTENSION);
+        $newFile = $rename . ($extension !== '' ? '.' . $extension : '');
+        $oldFile = (string) $currentFilename;
+
+        // Clear meta field
+        self::clearMetaFieldForFile($oldFile);
+
+        // Check if target filename already exists
+        if (self::filenameExists($newFile)) {
+            echo rex_view::error(rex_i18n::msg('mediapool_rename_error_filename_exists'));
+            return;
+        }
+
+        // Rename physical file
+        $oldPath = rex_path::media($oldFile);
+        $newPath = rex_path::media($newFile);
+
+        if (!file_exists($oldPath)) {
+            echo rex_view::error(rex_i18n::msg('mediapool_rename_error_file_not_found'));
+            return;
+        }
+
+        if (!rename($oldPath, $newPath)) {
+            echo rex_view::error(rex_i18n::msg('mediapool_rename_error_rename_failed'));
+            return;
+        }
+
+        // Update all database references
+        self::updateDatabaseReferences($oldFile, $newFile);
+
+        rex_delete_cache();
+
+        echo rex_view::success(rex_i18n::msg('mediapool_rename_success', $oldFile, $newFile));
+    }
+
+    /**
+     * Retrieves a media object if the file exists.
+     */
+    public static function getMediaByFilename(string $filename): ?rex_media
+    {
+        $media = rex_media::get($filename);
+
+        if ($media instanceof rex_media && $media->fileExists()) {
+            return $media;
         }
 
         return null;
     }
 
+    /**
+     * Clears the rename meta field for a specific file.
+     */
+    private static function clearMetaFieldForFile(string $filename): void
+    {
+        $sql = rex_sql::factory();
+        $sql->setTable(rex::getTable('media'));
+        $sql->setValue(self::META_FIELD, '');
+        $sql->setWhere('filename = :filename', ['filename' => $filename]);
+
+        try {
+            $sql->update();
+        } catch (rex_sql_exception $e) {
+            echo rex_view::warning($e->getMessage());
+        }
+    }
+
+    /**
+     * Checks whether a filename already exists in the media table.
+     */
+    private static function filenameExists(string $filename): bool
+    {
+        $sql = rex_sql::factory();
+        $sql->setQuery(
+            'SELECT `id` FROM `' . rex::getTable('media') . '` WHERE `filename` = :filename LIMIT 1',
+            ['filename' => $filename],
+        );
+
+        return $sql->getRows() > 0;
+    }
+
+    /**
+     * Updates all database references from the old filename to the new one.
+     *
+     * Iterates over all tables and all VARCHAR/TEXT columns, replacing
+     * occurrences that match on word boundaries.
+     */
+    private static function updateDatabaseReferences(string $oldFile, string $newFile): void
+    {
+        $sql = rex_sql::factory();
+        $sql->setQuery('SHOW TABLES');
+        $tables = $sql->getArray();
+
+        foreach ($tables as $row) {
+            $table = current($row);
+
+            $fieldSql = rex_sql::factory();
+            $fieldSql->setQuery('SHOW COLUMNS FROM `' . $sql->escape($table) . '`');
+            $fields = $fieldSql->getArray();
+
+            foreach ($fields as $fieldRow) {
+                $field = $fieldRow['Field'];
+
+                $escapedOldFile = $sql->escape($oldFile);
+                $escapedNewFile = $sql->escape($newFile);
+                $escapedTable = '`' . $sql->escape($table) . '`';
+                $escapedField = '`' . $sql->escape($field) . '`';
+
+                $update = 'UPDATE ' . $escapedTable . '
+                    SET ' . $escapedField . ' = CASE
+                        WHEN CONVERT(' . $escapedField . ' USING utf8mb4) REGEXP :regexp
+                        THEN REPLACE(' . $escapedField . ', :old_file, :new_file)
+                    END
+                    WHERE CONVERT(' . $escapedField . ' USING utf8mb4) REGEXP :regexp2';
+
+                $regexp = '\\b' . preg_quote($oldFile, '/') . '\\b';
+
+                $updateSql = rex_sql::factory();
+
+                try {
+                    $updateSql->setQuery($update, [
+                        'regexp' => $regexp,
+                        'old_file' => $oldFile,
+                        'new_file' => $newFile,
+                        'regexp2' => $regexp,
+                    ]);
+                } catch (rex_sql_exception $e) {
+                    // Silently skip tables/fields that cannot be updated (e.g. views, generated columns)
+                }
+            }
+        }
+    }
 }
