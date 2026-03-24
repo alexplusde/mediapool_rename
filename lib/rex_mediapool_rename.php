@@ -174,6 +174,18 @@ class MediapoolRename
     }
 
     /**
+     * Returns true when the given MySQL column type is a textual type
+     * on which a REPLACE/REGEXP update makes sense.
+     */
+    private static function isTextualColumnType(string $type): bool
+    {
+        // Normalize to lower-case and strip any length/charset suffix, e.g. "varchar(255)" -> "varchar"
+        $baseType = strtolower(preg_replace('/\s*\(.*/', '', $type));
+
+        return in_array($baseType, ['char', 'varchar', 'tinytext', 'text', 'mediumtext', 'longtext'], true);
+    }
+
+    /**
      * Updates all database references from the old filename to the new one.
      *
      * Iterates over all tables and all VARCHAR/TEXT columns, replacing
@@ -194,6 +206,11 @@ class MediapoolRename
 
             foreach ($fields as $fieldRow) {
                 $field = $fieldRow['Field'];
+
+                // Skip non-textual columns (INT, FLOAT, BLOB, DATE, etc.)
+                if (!self::isTextualColumnType($fieldRow['Type'])) {
+                    continue;
+                }
 
                 $escapedTable = $sql->escapeIdentifier($table);
                 $escapedField = $sql->escapeIdentifier($field);
