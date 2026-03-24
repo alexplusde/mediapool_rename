@@ -8,6 +8,7 @@ use rex_extension_point;
 use rex_i18n;
 use rex_media;
 use rex_path;
+use rex_request;
 use rex_sql;
 use rex_sql_exception;
 use rex_string;
@@ -38,10 +39,24 @@ class MediapoolRename
      */
     public static function clearMetaField(rex_extension_point $ep): void
     {
+        /** @var rex_sql $media */
+        $media = $ep->getParam('media');
+        if (!$media instanceof rex_sql) {
+            return;
+        }
+
+        $filename = $media->getValue('filename');
+        if (!$filename) {
+            return;
+        }
+
+        // Pre-fill meta field with current filename (without extension)
+        $nameWithoutExt = pathinfo($filename, PATHINFO_FILENAME);
+
         $sql = rex_sql::factory();
         $sql->setTable(rex::getTable('media'));
-        $sql->setValue(self::META_FIELD, '');
-        $sql->setWhere('filename = :filename', ['filename' => $ep->getParam('filename')]);
+        $sql->setValue(self::META_FIELD, $nameWithoutExt);
+        $sql->setWhere('filename = :filename', ['filename' => $filename]);
 
         try {
             $sql->update();
@@ -64,28 +79,22 @@ class MediapoolRename
             return;
         }
 
-        $sql = rex_sql::factory();
-        $sql->setQuery(
-            'SELECT `filename`, `med_mediapool_rename` FROM `' . rex::getTable('media') . '` WHERE `filename` = :filename',
-            ['filename' => $filename],
-        );
+        $renameValue = rex_request::post('med_mediapool_rename', 'string', '');
 
-        if (0 === $sql->getRows()) {
-            return;
-        }
-
-        $currentFilename = $sql->getValue('filename');
-        $renameValue = $sql->getValue(self::META_FIELD);
-
-        $rename = rex_string::normalize((string) $renameValue, '_', '.-');
+        $rename = rex_string::normalize($renameValue, '_', '-');
 
         if ('' === $rename) {
             return;
         }
 
-        $extension = pathinfo((string) $currentFilename, PATHINFO_EXTENSION);
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
         $newFile = $rename . ($extension !== '' ? '.' . $extension : '');
-        $oldFile = (string) $currentFilename;
+        $oldFile = $filename;
+
+        // Skip if filename has not changed
+        if ($newFile === $oldFile) {
+            return;
+        }
 
         // Clear meta field
         self::clearMetaFieldForFile($oldFile);
