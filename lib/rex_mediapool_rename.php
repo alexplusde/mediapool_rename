@@ -121,8 +121,10 @@ class MediapoolRename
         // Update all database references
         self::updateDatabaseReferences($oldFile, $newFile);
 
-        // Clear meta field only after a successful rename
-        // (at this point the DB row already has filename = $newFile)
+        // Clear meta field only after a successful rename.
+        // Clear for both old and new filename so the field is reset
+        // even if the media table update to $newFile did not succeed.
+        self::clearMetaFieldForFile($oldFile);
         self::clearMetaFieldForFile($newFile);
 
         rex_delete_cache();
