@@ -30,7 +30,7 @@ pages:
                 perm: admin
             docs:
                 title: translate:mediapool_rename_docs
-                subPath: README.md
+                subPath: readme.md
                 icon: rex-icon fa-info-circle
                 itemClass: pull-right
                 perm: admin
