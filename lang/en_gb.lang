@@ -1,0 +1,14 @@
+mediapool_rename_title = Mediapool Rename
+mediapool_rename_meta_field_label = Rename file (without extension)
+mediapool_rename_error_filename_exists = The filename already exists. Please choose a different filename.
+mediapool_rename_error_file_not_found = The original file was not found in the filesystem.
+mediapool_rename_error_rename_failed = The file could not be renamed. Please check file permissions.
+mediapool_rename_success = File successfully renamed: {0} → {1}
+mediapool_rename_help_title = Help
+mediapool_rename_docs = Documentation
+mediapool_rename_allowed_chars = Allowed characters: a–z, 0–9, hyphen (-) and underscore (_)
+mediapool_rename_validation_error = The filename contains invalid characters.
+mediapool_rename_settings = Settings
+mediapool_rename_settings_fieldset = Table Exclusions
+mediapool_rename_settings_excluded_patterns_label = Excluded table patterns (one pattern per line)
+mediapool_rename_settings_excluded_patterns_notice = Tables whose name contains any of the patterns will be skipped when updating database references. By default, tables containing "_history" or "tmp_" in their name are excluded.
