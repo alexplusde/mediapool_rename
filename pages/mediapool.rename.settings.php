@@ -11,7 +11,7 @@ $field->setLabel(rex_i18n::msg('mediapool_rename_settings_excluded_patterns_labe
 $field->setAttribute('rows', 8);
 $field->setAttribute('placeholder', "_history\ntmp_");
 
-$notice = $form->addRawField('<p class="help-block re-help-block">' . rex_i18n::msg('mediapool_rename_settings_excluded_patterns_notice') . '</p>');
+$form->addRawField('<p class="help-block re-help-block">' . rex_i18n::msg('mediapool_rename_settings_excluded_patterns_notice') . '</p>');
 
 $fragment = new rex_fragment();
 $fragment->setVar('title', rex_i18n::msg('mediapool_rename_settings'));
