@@ -201,7 +201,11 @@ class MediapoolRename
                     SET ' . $escapedField . ' = REPLACE(' . $escapedField . ', :old_file, :new_file)
                     WHERE CONVERT(' . $escapedField . ' USING utf8mb4) REGEXP :regexp';
 
-                $regexp = '(^|[,|])' . preg_quote($oldFile, '/') . '($|[,|])';
+                // Match the filename only when it is delimited by characters that are not valid
+                // filename characters (or by start/end of string). This approximates a "word boundary"
+                // tailored to normalized media filenames (letters, digits, underscore, dot, dash).
+                $filenameCharClass = 'A-Za-z0-9_.-';
+                $regexp = '(^|[^' . $filenameCharClass . '])' . preg_quote($oldFile, '/') . '([^' . $filenameCharClass . ']|$)';
 
                 $updateSql = rex_sql::factory();
 
