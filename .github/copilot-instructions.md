@@ -66,8 +66,8 @@
 ## Dependencies
 - PHP: >= 8.3, < 9
 - REDAXO: ^5.18.3
-- mediapool addon: >= 2.3.0
-- metainfo addon: >= 2.6.0
+- mediapool addon: >= 2.15.0
+- metainfo addon: >= 2.10.0
 
 ## When Suggesting Code
 - Always respect REDAXO addon architecture and APIs.
