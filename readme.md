@@ -52,8 +52,8 @@ Addon zur Umbenennung von Dateinamen im Medienpool. Benennt die physische Datei 
 
 - REDAXO >= 5.18.3
 - PHP >= 8.3
-- Addon `mediapool` >= 2.3.0
-- Addon `metainfo` >= 2.6.0
+- Addon `mediapool` >= 2.15.0
+- Addon `metainfo` >= 2.10.0
 
 ## Lizenz
 
