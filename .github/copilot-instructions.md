@@ -36,7 +36,7 @@
 
 ## Key Business Logic
 1. The addon adds a custom meta info field (`med_mediapool_rename`) to REDAXO's media table.
-2. On `MEDIA_FORM_EDIT` (late): clears the rename field after editing.
+2. On `MEDIA_FORM_EDIT` (late): clears the `med_mediapool_rename` meta field for all media records via an unconditional `UPDATE` on the media table when the form extension point is executed (i.e., during form handling, not after saving).
 3. On `MEDIA_UPDATED` (late): reads the rename field, sanitizes it, renames the physical file, and runs `REPLACE` SQL updates across all database tables/fields that reference the old filename using a word-boundary regexp.
 4. If the target filename already exists, the rename is aborted with an error message.
 
