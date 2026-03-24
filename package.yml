@@ -1,8 +1,8 @@
 package: mediapool_rename
-version: '1.0.0'
-author: 'explorit* new media'
+version: '2.0.0'
+author: 'Alexander Walther, based on explorit* new media'
 
 requires:
     packages:
         mediapool: '>=2.3.0'
-    redaxo: ^5.2.0
+    redaxo: ^5.19.0
