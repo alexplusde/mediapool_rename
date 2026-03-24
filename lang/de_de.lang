@@ -6,3 +6,5 @@ mediapool_rename_error_rename_failed = Die Datei konnte nicht umbenannt werden. 
 mediapool_rename_success = Die Datei wurde erfolgreich umbenannt: {0} → {1}
 mediapool_rename_help_title = Hilfe
 mediapool_rename_docs = Dokumentation
+mediapool_rename_allowed_chars = Erlaubte Zeichen: a–z, 0–9, Bindestrich (-) und Unterstrich (_)
+mediapool_rename_validation_error = Der Dateiname enthält unerlaubte Zeichen.

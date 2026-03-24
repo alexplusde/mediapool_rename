@@ -8,8 +8,8 @@ requires:
         version: '>=8.3,<9'
     redaxo: '^5.18.3'
     packages:
-        mediapool: '>=2.3.0'
-        metainfo: '>=2.6.0'
+        mediapool: '>=2.15.0'
+        metainfo: '>=2.10.0'
 
 page:
     title: translate:mediapool_rename_title

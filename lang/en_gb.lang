@@ -6,3 +6,5 @@ mediapool_rename_error_rename_failed = The file could not be renamed. Please che
 mediapool_rename_success = File successfully renamed: {0} → {1}
 mediapool_rename_help_title = Help
 mediapool_rename_docs = Documentation
+mediapool_rename_allowed_chars = Allowed characters: a–z, 0–9, hyphen (-) and underscore (_)
+mediapool_rename_validation_error = The filename contains invalid characters.
