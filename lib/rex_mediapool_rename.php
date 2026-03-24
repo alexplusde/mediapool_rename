@@ -179,25 +179,20 @@ class MediapoolRename
             $table = current($row);
 
             $fieldSql = rex_sql::factory();
-            $fieldSql->setQuery('SHOW COLUMNS FROM `' . $sql->escape($table) . '`');
+            $fieldSql->setQuery('SHOW COLUMNS FROM ' . $fieldSql->escapeIdentifier($table));
             $fields = $fieldSql->getArray();
 
             foreach ($fields as $fieldRow) {
                 $field = $fieldRow['Field'];
 
-                $escapedOldFile = $sql->escape($oldFile);
-                $escapedNewFile = $sql->escape($newFile);
-                $escapedTable = '`' . $sql->escape($table) . '`';
-                $escapedField = '`' . $sql->escape($field) . '`';
+                $escapedTable = $sql->escapeIdentifier($table);
+                $escapedField = $sql->escapeIdentifier($field);
 
                 $update = 'UPDATE ' . $escapedTable . '
-                    SET ' . $escapedField . ' = CASE
-                        WHEN CONVERT(' . $escapedField . ' USING utf8mb4) REGEXP :regexp
-                        THEN REPLACE(' . $escapedField . ', :old_file, :new_file)
-                    END
-                    WHERE CONVERT(' . $escapedField . ' USING utf8mb4) REGEXP :regexp2';
+                    SET ' . $escapedField . ' = REPLACE(' . $escapedField . ', :old_file, :new_file)
+                    WHERE CONVERT(' . $escapedField . ' USING utf8mb4) REGEXP :regexp';
 
-                $regexp = '\\b' . preg_quote($oldFile, '/') . '\\b';
+                $regexp = '(^|[,|])' . preg_quote($oldFile, '/') . '($|[,|])';
 
                 $updateSql = rex_sql::factory();
 
@@ -206,7 +201,6 @@ class MediapoolRename
                         'regexp' => $regexp,
                         'old_file' => $oldFile,
                         'new_file' => $newFile,
-                        'regexp2' => $regexp,
                     ]);
                 } catch (rex_sql_exception $e) {
                     // Silently skip tables/fields that cannot be updated (e.g. views, generated columns)
