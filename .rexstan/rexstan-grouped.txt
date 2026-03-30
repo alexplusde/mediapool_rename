@@ -1,43 +1,26 @@
 # rexstan Analyse: mediapool_rename
-# Level: 8 | PHP: 80400 | Extensions: deprecation, dead-code
-# Gesamt: 14 Fehler in 12 Kategorien
-# Datum: 2026-03-30 15:19:26
+# Level: 9 | PHP: 80400 | Extensions: deprecation, dead-code
+# Gesamt: 7 Fehler in 7 Kategorien
+# Datum: 2026-03-30 15:42:20
 
-### Parameter #1 $name of method rex_sql::escapeIdentifier() expects string, bool|float|int|string|null given. (3x)
-  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:246: Parameter #1 $name of method rex_sql::escapeIdentifier() expects string, bool|float|int|string|null given.
-  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:257: Parameter #1 $name of method rex_sql::escapeIdentifier() expects string, bool|float|int|string|null given.
-  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:258: Parameter #1 $name of method rex_sql::escapeIdentifier() expects string, bool|float|int|string|null given.
+### Parameter #1 $filename of static method Alexplusde\MediapoolRename\MediapoolRename::getMediaByFilename() expects string, mixed given. (1x)
+  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:83: Parameter #1 $filename of static method Alexplusde\MediapoolRename\MediapoolRename::getMediaByFilename() expects string, mixed given.
 
-### Variable $this might not be defined. (1x)
-  - src/addons/mediapool_rename/boot.php:12: Variable $this might not be defined.
+### Parameter #1 $path of function pathinfo expects string, mixed given. (1x)
+  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:95: Parameter #1 $path of function pathinfo expects string, mixed given.
 
-### Parameter #3 $priority of function rex_metainfo_add_field expects int, string given. (1x)
-  - src/addons/mediapool_rename/install.php:17: Parameter #3 $priority of function rex_metainfo_add_field expects int, string given.
+### Parameter #1 $filename of static method Alexplusde\MediapoolRename\MediapoolRename::clearMetaFieldForFile() expects string, mixed given. (1x)
+  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:105: Parameter #1 $filename of static method Alexplusde\MediapoolRename\MediapoolRename::clearMetaFieldForFile() expects string, mixed given.
 
-### Parameter #5 $type of function rex_metainfo_add_field expects int, string given. (1x)
-  - src/addons/mediapool_rename/install.php:19: Parameter #5 $type of function rex_metainfo_add_field expects int, string given.
+### Parameter #1 $file of static method rex_path::media() expects string, mixed given. (1x)
+  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:114: Parameter #1 $file of static method rex_path::media() expects string, mixed given.
 
-### Method Alexplusde\MediapoolRename\MediapoolRename::prefillRenameField() has parameter $ep with generic class rex_extension_point but does not specify its types: T (1x)
-  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:41: Method Alexplusde\MediapoolRename\MediapoolRename::prefillRenameField() has parameter $ep with generic class rex_extension_point but does not specify its types: T
+### Parameter #1 $oldFile of static method Alexplusde\MediapoolRename\MediapoolRename::updateDatabaseReferences() expects string, mixed given. (1x)
+  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:128: Parameter #1 $oldFile of static method Alexplusde\MediapoolRename\MediapoolRename::updateDatabaseReferences() expects string, mixed given.
 
-### Instanceof between rex_sql and rex_sql will always evaluate to true. (1x)
-  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:45: Instanceof between rex_sql and rex_sql will always evaluate to true.
+### Parameter #2 ...$replacements of static method rex_i18n::msg() expects int|string, mixed given. (1x)
+  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:132: Parameter #2 ...$replacements of static method rex_i18n::msg() expects int|string, mixed given.
 
-### Parameter #1 $path of function pathinfo expects string, float|int<min, -1>|int<1, max>|string|true given. (1x)
-  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:55: Parameter #1 $path of function pathinfo expects string, float|int<min, -1>|int<1, max>|string|true given.
-
-### Method Alexplusde\MediapoolRename\MediapoolRename::processUpdatedMedia() has parameter $ep with generic class rex_extension_point but does not specify its types: T (1x)
-  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:76: Method Alexplusde\MediapoolRename\MediapoolRename::processUpdatedMedia() has parameter $ep with generic class rex_extension_point but does not specify its types: T
-
-### Public method "Alexplusde\MediapoolRename\MediapoolRename::getMediaByFilename()" is never used (1x)
-  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:135: Public method "Alexplusde\MediapoolRename\MediapoolRename::getMediaByFilename()" is never used
-
-### Parameter #1 $string of function strtolower expects string, string|null given. (1x)
-  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:217: Parameter #1 $string of function strtolower expects string, string|null given.
-
-### Parameter #1 $table of static method Alexplusde\MediapoolRename\MediapoolRename::isExcludedTable() expects string, bool|float|int|string|null given. (1x)
-  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:241: Parameter #1 $table of static method Alexplusde\MediapoolRename\MediapoolRename::isExcludedTable() expects string, bool|float|int|string|null given.
-
-### Parameter #1 $type of static method Alexplusde\MediapoolRename\MediapoolRename::isTextualColumnType() expects string, bool|float|int|string|null given. (1x)
-  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:253: Parameter #1 $type of static method Alexplusde\MediapoolRename\MediapoolRename::isTextualColumnType() expects string, bool|float|int|string|null given.
+### Cannot cast mixed to string. (1x)
+  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:194: Cannot cast mixed to string.
 

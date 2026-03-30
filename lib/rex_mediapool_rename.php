@@ -80,7 +80,7 @@ class MediapoolRename
     {
         $filename = $ep->getParam('filename');
 
-        if (!$filename || !self::getMediaByFilename($filename)) {
+        if (!is_string($filename) || '' === $filename || !self::getMediaByFilename($filename)) {
             return;
         }
 
@@ -191,7 +191,8 @@ class MediapoolRename
         // The PHP-level default ensures the feature works on existing installations
         // that upgrade without triggering a full re-install (where default_config is applied).
         $default = "_history\ntmp_";
-        $raw = (string) rex_config::get('mediapool_rename', 'excluded_table_patterns', $default);
+        $value = rex_config::get('mediapool_rename', 'excluded_table_patterns', $default);
+        $raw = is_string($value) ? $value : $default;
 
         return array_values(array_filter(array_map('trim', explode("\n", $raw))));
     }
