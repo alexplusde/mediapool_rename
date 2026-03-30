@@ -1,0 +1,26 @@
+# rexstan Analyse: mediapool_rename
+# Level: 9 | PHP: 80400 | Extensions: deprecation, dead-code
+# Gesamt: 7 Fehler in 7 Kategorien
+# Datum: 2026-03-30 15:42:20
+
+### Parameter #1 $filename of static method Alexplusde\MediapoolRename\MediapoolRename::getMediaByFilename() expects string, mixed given. (1x)
+  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:83: Parameter #1 $filename of static method Alexplusde\MediapoolRename\MediapoolRename::getMediaByFilename() expects string, mixed given.
+
+### Parameter #1 $path of function pathinfo expects string, mixed given. (1x)
+  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:95: Parameter #1 $path of function pathinfo expects string, mixed given.
+
+### Parameter #1 $filename of static method Alexplusde\MediapoolRename\MediapoolRename::clearMetaFieldForFile() expects string, mixed given. (1x)
+  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:105: Parameter #1 $filename of static method Alexplusde\MediapoolRename\MediapoolRename::clearMetaFieldForFile() expects string, mixed given.
+
+### Parameter #1 $file of static method rex_path::media() expects string, mixed given. (1x)
+  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:114: Parameter #1 $file of static method rex_path::media() expects string, mixed given.
+
+### Parameter #1 $oldFile of static method Alexplusde\MediapoolRename\MediapoolRename::updateDatabaseReferences() expects string, mixed given. (1x)
+  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:128: Parameter #1 $oldFile of static method Alexplusde\MediapoolRename\MediapoolRename::updateDatabaseReferences() expects string, mixed given.
+
+### Parameter #2 ...$replacements of static method rex_i18n::msg() expects int|string, mixed given. (1x)
+  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:132: Parameter #2 ...$replacements of static method rex_i18n::msg() expects int|string, mixed given.
+
+### Cannot cast mixed to string. (1x)
+  - src/addons/mediapool_rename/lib/rex_mediapool_rename.php:194: Cannot cast mixed to string.
+
