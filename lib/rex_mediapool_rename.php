@@ -37,17 +37,18 @@ class MediapoolRename
      * Pre-fills the rename meta field for the current media item with its basename.
      *
      * Called via extension point MEDIA_FORM_EDIT (late) to initialize the rename field.
+     *
+     * @param rex_extension_point<string> $ep
      */
     public static function prefillRenameField(rex_extension_point $ep): void
     {
-        /** @var rex_sql $media */
         $media = $ep->getParam('media');
         if (!$media instanceof rex_sql) {
             return;
         }
 
-        $filename = $media->getValue('filename');
-        if (!$filename) {
+        $filename = (string) $media->getValue('filename');
+        if ('' === $filename) {
             return;
         }
 
@@ -72,6 +73,8 @@ class MediapoolRename
      *
      * Called via extension point MEDIA_UPDATED (late).
      * Renames the physical file and updates all database references.
+     *
+     * @param rex_extension_point<string> $ep
      */
     public static function processUpdatedMedia(rex_extension_point $ep): void
     {
@@ -131,6 +134,8 @@ class MediapoolRename
 
     /**
      * Retrieves a media object if the file exists.
+     *
+     * @api
      */
     public static function getMediaByFilename(string $filename): ?rex_media
     {
@@ -214,7 +219,7 @@ class MediapoolRename
     private static function isTextualColumnType(string $type): bool
     {
         // Normalize to lower-case and strip any length/charset suffix, e.g. "varchar(255)" -> "varchar"
-        $baseType = strtolower(preg_replace('/\s*\(.*/', '', $type));
+        $baseType = strtolower((string) preg_replace('/\s*\(.*/', '', $type));
 
         return in_array($baseType, ['char', 'varchar', 'tinytext', 'text', 'mediumtext', 'longtext'], true);
     }
@@ -235,7 +240,7 @@ class MediapoolRename
         $excludedPatterns = self::getExcludedTablePatterns();
 
         foreach ($tables as $row) {
-            $table = current($row);
+            $table = (string) current($row);
 
             // Skip tables matching any configured exclusion pattern
             if (self::isExcludedTable($table, $excludedPatterns)) {
@@ -247,10 +252,10 @@ class MediapoolRename
             $fields = $fieldSql->getArray();
 
             foreach ($fields as $fieldRow) {
-                $field = $fieldRow['Field'];
+                $field = (string) $fieldRow['Field'];
 
                 // Skip non-textual columns (INT, FLOAT, BLOB, DATE, etc.)
-                if (!self::isTextualColumnType($fieldRow['Type'])) {
+                if (!self::isTextualColumnType((string) $fieldRow['Type'])) {
                     continue;
                 }
 

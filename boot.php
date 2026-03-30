@@ -9,6 +9,6 @@ if (rex::isBackend() && rex::getUser()) {
     $page = rex_request('page', 'string', '');
     if (str_starts_with($page, 'mediapool')) {
         rex_view::setJsProperty('mediapool_rename_validation_error', rex_i18n::msg('mediapool_rename_validation_error'));
-        rex_view::addJsFile($this->getAssetsUrl('js/mediapool_rename.js'));
+        rex_view::addJsFile(rex_addon::get('mediapool_rename')->getAssetsUrl('js/mediapool_rename.js'));
     }
 }
