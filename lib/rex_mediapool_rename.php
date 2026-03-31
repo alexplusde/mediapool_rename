@@ -5,6 +5,7 @@ namespace Alexplusde\MediapoolRename;
 use rex;
 use rex_config;
 use function rex_delete_cache;
+use rex_extension;
 use rex_extension_point;
 use rex_i18n;
 use rex_media;
@@ -149,6 +150,18 @@ class MediapoolRename
     }
 
     /**
+     * Returns true when the given table name is always excluded from rename updates.
+     *
+     * Tables containing "tmp_" or "_history" in their name are always excluded.
+     *
+     * @api
+     */
+    public static function isAlwaysExcludedTable(string $table): bool
+    {
+        return str_contains($table, 'tmp_') || str_contains($table, '_history');
+    }
+
+    /**
      * Clears the rename meta field for a specific file.
      */
     private static function clearMetaFieldForFile(string $filename): void
@@ -180,37 +193,71 @@ class MediapoolRename
     }
 
     /**
-     * Returns the list of table-exclusion patterns from config.
-     * Each non-empty line of the stored value is treated as a substring
-     * that, if present in a table name, causes the table to be skipped.
+     * Returns the list of user-configured excluded table names from config.
      *
      * @return list<string>
      */
-    private static function getExcludedTablePatterns(): array
+    private static function getExcludedTablesFromConfig(): array
     {
-        // The PHP-level default ensures the feature works on existing installations
-        // that upgrade without triggering a full re-install (where default_config is applied).
-        $default = "_history\ntmp_";
-        $value = rex_config::get('mediapool_rename', 'excluded_table_patterns', $default);
-        $raw = is_string($value) ? $value : $default;
+        $value = rex_config::get('mediapool_rename', 'excluded_tables', []);
 
-        return array_values(array_filter(array_map('trim', explode("\n", $raw))));
-    }
+        if (is_array($value)) {
+            return array_values(array_filter($value, 'is_string'));
+        }
 
-    /**
-     * Returns true when the given table name matches at least one exclusion pattern.
-     *
-     * @param list<string> $patterns
-     */
-    private static function isExcludedTable(string $table, array $patterns): bool
-    {
-        foreach ($patterns as $pattern) {
-            if (str_contains($table, $pattern)) {
-                return true;
+        if (is_string($value) && '' !== $value) {
+            $decoded = json_decode($value, true);
+            if (is_array($decoded)) {
+                return array_values(array_filter($decoded, 'is_string'));
             }
         }
 
-        return false;
+        return [];
+    }
+
+    /**
+     * Returns the full list of excluded table names for the current rename operation.
+     *
+     * Merges:
+     * - user-configured excluded tables from settings
+     * - tables added via the MEDIAPOOL_RENAME_EXCLUDED_TABLES extension point
+     *
+     * Always-excluded tables (tmp_, _history) are handled separately via isAlwaysExcludedTable().
+     *
+     * @return list<string>
+     */
+    private static function getExcludedTables(): array
+    {
+        $configTables = self::getExcludedTablesFromConfig();
+
+        /** @var list<string> $epTables */
+        $epTables = rex_extension::registerPoint(new rex_extension_point(
+            'MEDIAPOOL_RENAME_EXCLUDED_TABLES',
+            [],
+        ));
+
+        if (!is_array($epTables)) {
+            $epTables = [];
+        }
+
+        return array_values(array_unique(array_merge($configTables, $epTables)));
+    }
+
+    /**
+     * Returns true when the given table name should be excluded from rename updates.
+     *
+     * A table is excluded when it is always excluded (tmp_, _history patterns)
+     * or matches an explicitly configured/EP-provided table name.
+     *
+     * @param list<string> $excludedTables  Explicit table names to exclude
+     */
+    private static function isExcludedTable(string $table, array $excludedTables): bool
+    {
+        if (self::isAlwaysExcludedTable($table)) {
+            return true;
+        }
+
+        return in_array($table, $excludedTables, true);
     }
 
     /**
@@ -237,14 +284,13 @@ class MediapoolRename
         $sql->setQuery('SHOW TABLES');
         $tables = $sql->getArray();
 
-        // Load exclusion patterns once to avoid re-parsing config on every table iteration
-        $excludedPatterns = self::getExcludedTablePatterns();
+        $excludedTables = self::getExcludedTables();
 
         foreach ($tables as $row) {
             $table = (string) current($row);
 
-            // Skip tables matching any configured exclusion pattern
-            if (self::isExcludedTable($table, $excludedPatterns)) {
+            // Skip tables matching any exclusion rule
+            if (self::isExcludedTable($table, $excludedTables)) {
                 continue;
             }
 
