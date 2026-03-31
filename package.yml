@@ -16,18 +16,16 @@ page:
     hidden: true
 
 default_config:
-    excluded_table_patterns: "_history\ntmp_"
+    excluded_tables: []
 
 pages:
-    mediapool/rename:
+    system/mediapool_rename:
         title: translate:mediapool_rename_title
-        perm: mediapool_rename[]
+        perm: admin
         subpages:
             settings:
                 title: translate:mediapool_rename_settings
                 icon: rex-icon fa-cog
-                itemClass: pull-right
-                perm: admin
             docs:
                 title: translate:mediapool_rename_docs
                 subPath: readme.md
