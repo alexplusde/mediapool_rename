@@ -16,7 +16,7 @@ page:
     hidden: true
 
 default_config:
-    excluded_tables: ''
+    excluded_tables: []
 
 pages:
     system/mediapool_rename:
