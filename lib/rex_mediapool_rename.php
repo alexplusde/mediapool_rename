@@ -230,15 +230,12 @@ class MediapoolRename
     {
         $configTables = self::getExcludedTablesFromConfig();
 
-        /** @var list<string> $epTables */
-        $epTables = rex_extension::registerPoint(new rex_extension_point(
+        $epResult = rex_extension::registerPoint(new rex_extension_point(
             'MEDIAPOOL_RENAME_EXCLUDED_TABLES',
             [],
         ));
 
-        if (!is_array($epTables)) {
-            $epTables = [];
-        }
+        $epTables = is_array($epResult) ? array_filter($epResult, 'is_string') : [];
 
         return array_values(array_unique(array_merge($configTables, $epTables)));
     }
