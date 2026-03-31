@@ -5,6 +5,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     var formGroup = input.closest(".form-group") || input.parentNode;
+
+    // Hide rename field on upload page – multiple files may be uploaded at once
+    var page = new URLSearchParams(window.location.search).get("page") || "";
+    if (page === "mediapool/upload") {
+        formGroup.style.display = "none";
+        return;
+    }
     var inputContainer = input.parentNode;
     var pattern = input.getAttribute("pattern");
     if (!pattern) {
